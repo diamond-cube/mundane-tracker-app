@@ -1,80 +1,153 @@
-import React from "react";
+import Box from "@mui/material/Box";
+import Drawer from "@mui/material/Drawer";
+import CssBaseline from "@mui/material/CssBaseline";
 import {
-  Box,
-  Drawer,
-  IconButton,
+  AppBar,
+  Divider,
   List,
-  ListItem,
-  ListItemButton,
   ListItemIcon,
-  Stack,
-  Tooltip,
+  ListItem,
+  ListItemText,
+  ListItemButton,
+  Toolbar,
   Typography,
+  TextField,
+  Button,
+  Stack,
+  InputAdornment,
+  IconButton,
 } from "@mui/material";
-import LaptopIcon from "@mui/icons-material/Laptop";
-import LibraryBooksIcon from "@mui/icons-material/LibraryBooks";
-import MovieOutlinedIcon from "@mui/icons-material/MovieOutlined";
-import HomeOutlinedIcon from "@mui/icons-material/HomeOutlined";
-import SettingsIcon from "@mui/icons-material/Settings";
-import LogoutIcon from "@mui/icons-material/Logout";
-import LightModeIcon from "@mui/icons-material/LightMode";
 
-const drawerWidth = 72;
+import {
+  SettingsOutlined,
+  HomeOutlined,
+  MovieOutlined,
+  Laptop,
+  LibraryBooks,
+  Logout,
+  SearchRounded,
+} from "@mui/icons-material";
+import { useNavigate } from "react-router-dom";
+import { buttonStyle, textFieldStyle } from "../styles/styles";
 
-const menuItems = [
-  { icon: <HomeOutlinedIcon />, label: "Home" },
-  { icon: <MovieOutlinedIcon />, label: "Movies" },
-  { icon: <LaptopIcon />, label: "Anime" },
-  { icon: <LibraryBooksIcon />, label: "Manga" },
-];
+export const drawerWidth = 200;
 
-export default function NavBar() {
+export default function NavBar({ children }) {
+  const nav = useNavigate();
+  const menuItems = [
+    {
+      icon: <HomeOutlined />,
+      label: "Home",
+      navigate: () => {
+        nav("/");
+      },
+    },
+    {
+      icon: <MovieOutlined />,
+      label: "Movies",
+      navigate: () => {
+        nav("/movies");
+      },
+    },
+    {
+      icon: <Laptop />,
+      label: "Anime",
+      navigate: () => {
+        nav("/anime");
+      },
+    },
+    {
+      icon: <LibraryBooks />,
+      label: "Manga",
+      navigate: () => {
+        nav("/manga");
+      },
+    },
+  ];
+
   return (
-    <Drawer
-      variant="permanent"
-      sx={{
-        width: drawerWidth,
-        flexShrink: 0,
-        [`& .MuiDrawer-paper`]: {
-          width: drawerWidth,
-          boxSizing: "border-box",
-          backgroundColor: "#fff",
-          borderRight: "1px solid #e0e0e0",
-          display: "flex",
-          flexDirection: "column",
-          justifyContent: "space-between",
+    <Box sx={{ display: "flex" }}>
+      <CssBaseline />
+      <AppBar
+        color="none"
+        position="fixed"
+        sx={{
+          width: `calc(100% - ${drawerWidth}px)`,
+          ml: `${drawerWidth}px`,
+          boxShadow: "none",
           alignItems: "center",
-          py: 2,
-        },
-      }}
-    >
-      {/* Top section: Navigation */}
-      <Stack spacing={2}>
-        {menuItems.map((item, index) => (
-          <Box key={index} textAlign="center">
-            <Tooltip title={item.label} placement="right">
-              <IconButton color="default">{item.icon}</IconButton>
-            </Tooltip>
-            <Typography variant="caption" color="textSecondary">
-              {item.label}
-            </Typography>
-          </Box>
-        ))}
-      </Stack>
+          mt: 1,
+        }}
+      >
+        <TextField
+          placeholder="Search"
+          size="small"
+          type="search"
+          sx={{ ...textFieldStyle }}
+          slotProps={{
+            input: {
+              endAdornment: (
+                <InputAdornment position="end">
+                  <IconButton edge="end">
+                    <SearchRounded />
+                  </IconButton>
+                </InputAdornment>
+              ),
+            },
+          }}
+        />
+      </AppBar>
+      <Drawer
+        sx={{
+          width: drawerWidth,
+          flexShrink: 0,
+          "& .MuiDrawer-paper": {
+            width: drawerWidth,
+            boxSizing: "border-box",
+          },
+        }}
+        variant="permanent"
+        anchor="left"
+      >
+        <Toolbar>
+          <Typography noWrap>Mundane Tracker</Typography>
+        </Toolbar>
+        <Divider />
+        <List>
+          {menuItems.map((item) => (
+            <ListItem key={item.label} disablePadding>
+              <ListItemButton onClick={item.navigate}>
+                <ListItemIcon>{item.icon}</ListItemIcon>
+                <ListItemText primary={item.label} />
+              </ListItemButton>
+            </ListItem>
+          ))}
+        </List>
+        <Divider />
 
-      {/* Bottom section: Mode toggle & logout */}
-      <Stack spacing={2} alignItems="center">
-        <Tooltip title="Toggle light/dark mode" placement="right">
-          <IconButton color="default">
-            <LightModeIcon />
-          </IconButton>
-        </Tooltip>
-        <Tooltip title="Logout" placement="right">
-          <IconButton color="default">
-            <LogoutIcon />
-          </IconButton>
-        </Tooltip>
-      </Stack>
-    </Drawer>
+        <List>
+          <ListItem disablePadding>
+            <ListItemButton>
+              <ListItemIcon color="default">
+                <SettingsOutlined />
+              </ListItemIcon>
+              <ListItemText primary="Settings" />
+            </ListItemButton>
+          </ListItem>
+          <ListItem disablePadding>
+            <ListItemButton>
+              <ListItemIcon color="default">
+                <Logout />
+              </ListItemIcon>
+              <ListItemText primary="Sign Out" />
+            </ListItemButton>
+          </ListItem>
+        </List>
+      </Drawer>
+      <Box component="main" sx={{ flexGrow: 1, bgcolor: "background.default", p: 3 }}>
+        <Toolbar />
+        {children}
+      </Box>
+    </Box>
   );
 }
